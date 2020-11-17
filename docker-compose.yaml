@@ -1,0 +1,14 @@
+https-portal:
+  image: steveltn/https-portal:1
+  ports:
+    - '80:80'
+    - '443:443'
+  links:
+    - server
+  restart: always
+  environment:
+    DOMAINS: 'lineapimaster.tk -> http://server:55555'
+    STAGE: 'production'
+server:
+  build: .
+  restart: always
