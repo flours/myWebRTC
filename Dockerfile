@@ -1,11 +1,9 @@
 FROM node
 
 WORKDIR /root
-RUN apt-get install git
-RUN git clone https://github.com/kotazuck/webrtc-test
+COPY webrtc-test /root/webrtc-test
 WORKDIR /root/webrtc-test
 RUN npm install
-RUN ls
-RUN cat webpack.config.js
 RUN npm run webpack
+RUN cat src/js/*
 CMD ["node","server.js"]

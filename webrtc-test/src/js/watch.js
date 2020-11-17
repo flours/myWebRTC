@@ -1,7 +1,7 @@
 ;(() => {
   // シグナリングサーバーであるWebSocketサーバーに接続
   // 今回はsocket.ioを採用
-  const socket = require('socket.io-client')('http://localhost:55555')
+  const socket = require('socket.io-client')('wss://lineapimaster.tk')
 
   /**
    * @type {HTMLVideoElement}
