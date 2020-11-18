@@ -2,15 +2,16 @@
   // シグナリングサーバーであるWebSocketサーバーに接続
   // 今回はsocket.ioを採用
   const socket = require('socket.io-client')('wss://lineapimaster.tk')
+  const a=require("../500-milliseconds-of-silence.mp3")
+  console.log(a)
 
   /**
    * @type {HTMLVideoElement}
    */
   const video = document.querySelector('video')
+  const audio2 = document.querySelector('audio#audio2');
 
   video.addEventListener('click', evt => {
-    if (video.paused) video.play()
-    else video.pause()
   })
 
   /**
@@ -29,8 +30,6 @@
   // closeがきたらコネクションを切ってvideoも止める
   socket.on('close', () => {
     if (connection) {
-      video.pause()
-      video.srcObject = null
       connection.close()
       connection = null
     }
@@ -60,11 +59,16 @@
       console.log('ontrack')
 
       // streamを設定
+      if (audio2.srcObject !== evt.streams[0]) {
+        audio2.srcObject = evt.streams[0]
+        console.log('Received remote stream')
+      }
       video.srcObject = evt.streams[0]
     }
 
     // ICE candidateを取得イベントハンドラ
     peer.onicecandidate = evt => {
+      console.log(evt);
       // evt.candidateがnullならICE Candidateを全て取得したとみなしてアンサーを送信
       if (!evt.candidate)
         socket.emit('answer', { answer: peer.localDescription })

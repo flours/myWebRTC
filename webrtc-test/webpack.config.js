@@ -1,6 +1,8 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const SRC = path.resolve(__dirname,'node_modules')
+
 
 module.exports = {
   // モードの設定、v4系以降はmodeを指定しないと、webpack実行時に警告が出る
@@ -17,6 +19,13 @@ module.exports = {
       {
         test: /\.html$/,
         use: 'html-loader'
+      },
+      {
+          test: /\.mp3$/,
+          loader: 'file-loader',
+          options: {
+              name: '[path][name].[ext]'
+          }
       }
     ]
   },

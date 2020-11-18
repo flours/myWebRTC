@@ -13,7 +13,7 @@
    * PC映像streamを取得
    * @type {MediaStream}
    */
-  const stream = await navigator.mediaDevices.getDisplayMedia({ video: true })
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
 
   // ソケットサーバー疎通確認
   socket.on('connect', () => console.log('socket', 'connected'))
@@ -45,7 +45,7 @@
 
     // cidをキーとしてコネクションを保存
     connections[cid] = peer
-
+    console.log(stream.getTracks())
     // コネクションにストリームを設定
     stream.getTracks().forEach(track => peer.addTrack(track, stream))
 
