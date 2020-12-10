@@ -3,6 +3,16 @@
   // 今回はsocket.ioを採用
   const socket = require('socket.io-client')('wss://lineapimaster.tk',{transports: ['websocket']})
 
+  function setHandler(){
+    document.getElementById('sendButton').onclick = sendMessage;
+    console.log("handler set");
+  }
+
+  function sendMessage(){
+    text=document.getElementById('chatInput').value;
+    socket.emit('chatMessage', { message:text})
+  }
+
   /**
    * RTCPeerConnectionをクライアントごとに格納する変数
    * keyをクライアントID（ソケットID）として保存する
@@ -13,10 +23,15 @@
    * PC映像streamを取得
    * @type {MediaStream}
    */
-  const stream = await navigator.mediaDevices.getDisplayMedia({ video: true })
+  var stream = null;
+  document.getElementById('allowDelivery').onclick=async function(){
+    stream = await navigator.mediaDevices.getDisplayMedia({ video: true })
+  }
 
   // ソケットサーバー疎通確認
-  socket.on('connect', () => console.log('socket', 'connected'))
+  socket.on('connect', () => {
+    socket.emit('setUserName',prompt('ユーザー名を半角英数で入力してください'))
+  })
 
   // 配信要求を受ける
   // Client ID （cid）を受け取りコネクションを作成する
@@ -24,7 +39,13 @@
 
   // アンサーを受ける
   socket.on('answer', async ({ cid, answer }) => {
+    console.log("answer",cid in connections)
     if (cid in connections) connections[cid].setRemoteDescription(answer)
+  })
+
+  socket.on('chatMessage', ({userName,message}) => {
+    chatDiv=document.getElementById('chatMessages')
+    chatDiv.innerHTML+="<hr>"+userName+"<br>"+message+"<hr><br>"
   })
 
   /**
@@ -47,7 +68,10 @@
     connections[cid] = peer
 
     // コネクションにストリームを設定
-    stream.getTracks().forEach(track => peer.addTrack(track, stream))
+    stream.getTracks().forEach(track => {
+        console.log(track,stream)
+        peer.addTrack(track, stream)
+    })
 
     // ICE candidateを取得イベントハンドラ
     peer.onicecandidate = evt => {
@@ -63,4 +87,6 @@
     // STUNサーバーへアクセスが始まり、onicecandidateが呼ばれるようになる
     await peer.setLocalDescription(offer)
   }
+  setHandler();
 })()
+

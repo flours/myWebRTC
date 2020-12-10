@@ -8,7 +8,7 @@ https-portal:
   restart: always
   environment:
     DOMAINS: 'lineapimaster.tk -> http://server:55555'
-    STAGE: 'production'
+    STAGE: 'staging'
     WEBSOCKET: 'true'
 server:
   build: .

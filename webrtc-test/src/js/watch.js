@@ -3,6 +3,22 @@
   // 今回はsocket.ioを採用
   const socket = require('socket.io-client')('wss://lineapimaster.tk')
 
+
+  function setHandler(){
+    document.getElementById('sendButton').onclick = sendMessage;
+    document.getElementById('watchButton').onclick = watchRequest;
+    console.log("handler set");
+  }
+
+  function sendMessage(){
+    text=document.getElementById('chatInput').value;
+    socket.emit('chatMessage', { message:text})
+  }
+  function watchRequest(){
+    text=document.getElementById('watchName').value;
+    socket.emit('request',text)
+  }
+
   /**
    * @type {HTMLVideoElement}
    */
@@ -21,10 +37,12 @@
   let connection = null
 
   // ソケット接続で配信要求する
-  socket.on('connect', () => socket.emit('request'))
+  socket.on('connect', () => {
+    socket.emit('setUserName',prompt('ユーザー名を半角英数で入力してください'))
+  })
 
   // アンサーを受ける
-  socket.on('offer', async ({ offer }) => sendAnswer(offer))
+  socket.on('offer', async ({ offer ,cid}) => sendAnswer(offer,cid))
 
   // closeがきたらコネクションを切ってvideoも止める
   socket.on('close', () => {
@@ -35,6 +53,10 @@
       connection = null
     }
   })
+  socket.on('chatMessage', ({userName,message}) => {
+    chatDiv=document.getElementById('chatMessages')
+    chatDiv.innerHTML+="<hr>"+userName+"<br>"+message+"<hr><br>"
+  })
 
   /**
    * アンサーを送信する
@@ -42,7 +64,7 @@
    * @param {RTCSessionDescription} offer
    * @return {void}
    */
-  async function sendAnswer(offer) {
+  async function sendAnswer(offer,cid) {
     // コネクションの設定
     const pcConfig = {
       // STUNサーバーはGoogle様のものを利用させていただく
@@ -67,7 +89,7 @@
     peer.onicecandidate = evt => {
       // evt.candidateがnullならICE Candidateを全て取得したとみなしてアンサーを送信
       if (!evt.candidate)
-        socket.emit('answer', { answer: peer.localDescription })
+        socket.emit('answer', { answer: peer.localDescription ,cid })
     }
 
     // コネクションの通信先としてオファーを設定
@@ -79,4 +101,5 @@
     // アンサーを自身に設定
     await peer.setLocalDescription(answer)
   }
+  setHandler();
 })()

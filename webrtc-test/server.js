@@ -14,27 +14,49 @@ const server = http.createServer(app)
 // WebSocketサーバーにはsocket.ioを採用
 const io = require('socket.io')(server)
 
+
+
+function chatHandle(socket){
+  socket.on('chatMessage',({message})=>{
+    console.log(socket.userName)
+    io.emit("chatMessage", {userName:socket.userName,message})
+  })
+}
+
+userSockets= []
+
 // 接続要求
 io.on('connect', socket => {
   console.log('io', 'connect')
   console.log('io', 'socket: ', socket.id)
 
   // 受信側からの配信要求を配信側へ渡す
-  socket.on('request', () =>
-    socket.broadcast.emit('request', { cid: socket.id })
+  socket.on('request', (name) =>{
+      console.log(name,userSockets)
+      io.to(userSockets[name]).emit('request', {cid:socket.id})
+    }
   )
 
   // 配信側からのオファーを受信側へ渡す
-  socket.on('offer', ({ offer }) => {
-    socket.broadcast.emit('offer', { offer })
+  socket.on('offer', ({ offer,cid }) => {
+    io.to(cid).emit('offer', { offer,cid:socket.id })
     // 配信側の接続が切れた場合にそれを受信側へ通知する
-    socket.on('disconnect', () => socket.broadcast.emit('close'))
+    socket.on('disconnect', (cid) => io.to().emit('close'))
   })
 
   // 受信側からのアンサーを配信側へ渡す
-  socket.on('answer', ({ answer }) =>
-    socket.broadcast.emit('answer', { cid: socket.id, answer })
+  socket.on('answer', ({ answer ,cid}) =>{
+      console.log("answer")
+      io.to(cid).emit('answer', { cid: socket.id, answer })
+    }
   )
+  socket.on('setUserName',(userName) => {
+    if(!userName)userName = '';
+    userSockets[userName]=socket.id;
+    socket.userName=userName
+    console.log(userName)
+  }) 
+  chatHandle(socket)
 })
 
 server.listen(55555)
