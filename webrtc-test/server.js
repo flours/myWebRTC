@@ -43,6 +43,10 @@ io.on('connect', socket => {
     // 配信側の接続が切れた場合にそれを受信側へ通知する
     socket.on('disconnect', (cid) => io.to().emit('close'))
   })
+  socket.on('icecandidate', ({ candidate,cid }) => {
+    io.to(cid).emit('icecandidate', { candidate,cid:socket.id })
+    // 配信側の接続が切れた場合にそれを受信側へ通知する
+  })
 
   // 受信側からのアンサーを配信側へ渡す
   socket.on('answer', ({ answer ,cid}) =>{

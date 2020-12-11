@@ -10,11 +10,18 @@
         padding: 0;
         margin: 0;
       }
+      .v {
+        width: 100%;
+        background-color: #000;
+      }
     </style>
   </head>
   <body>
     <h1>配信側です</h1>
     <button id="allowDelivery">配信</button>
+    <video class="v" autoplay></video>
+    <textarea id="watchName" rows=1></textArea>
+    <button id = "watchButton">見る</button>
     <h1>チャットもできるはず</h1>
     <textarea cols="100" rows="10" id="chatInput" placeholder="メッセージをやりとりできます？"></textarea>
     <button id="sendButton" >送信</button>
