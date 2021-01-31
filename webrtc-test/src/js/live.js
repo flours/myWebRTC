@@ -1,7 +1,7 @@
 ;(async () => {
   // シグナリングサーバーであるWebSocketサーバーに接続
   // 今回はsocket.ioを採用
-  const socket = require('socket.io-client')('wss://lineapimaster.tk',{transports: ['websocket']})
+  const socket = require('socket.io-client')('wss://webrtc.flours.info',{transports: ['websocket']})
   connection=null
   function setHandler(){
     document.getElementById('sendButton').onclick = sendMessage;
@@ -44,6 +44,7 @@
   var stream = null;
   document.getElementById('allowDelivery').onclick=async function(){
     stream = await navigator.mediaDevices.getDisplayMedia({ video: true })
+    socket.emit('chatMessage', { message:"配信準備完了しました"})
   }
 
   // ソケットサーバー疎通確認

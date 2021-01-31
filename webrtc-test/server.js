@@ -59,6 +59,7 @@ io.on('connect', socket => {
     userSockets[userName]=socket.id;
     socket.userName=userName
     console.log(userName)
+    io.emit("chatMessage", {userName:socket.userName,message:"入室しました。"})
   }) 
   chatHandle(socket)
 })

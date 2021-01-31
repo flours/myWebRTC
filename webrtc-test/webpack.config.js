@@ -9,7 +9,7 @@ module.exports = {
   // エントリーポイントの設定
   entry: {
     live: './src/js/live.js',
-    watch: './src/js/watch.js'
+    //watch: './src/js/watch.js'
   },
 
   module: {
@@ -25,11 +25,11 @@ module.exports = {
       template: './src/html/index.html',
       chunks: ['live']
     }),
-    new HtmlWebpackPlugin({
-      template: './src/html/watch.html',
-      filename: 'watch.html',
-      chunks: ['watch']
-    })
+    //new HtmlWebpackPlugin({
+    //  template: './src/html/watch.html',
+    //  filename: 'watch.html',
+    //  chunks: ['watch']
+    //})
   ],
 
   // 出力の設定

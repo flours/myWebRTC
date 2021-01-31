@@ -7,7 +7,7 @@ https-portal:
     - server
   restart: always
   environment:
-    DOMAINS: 'lineapimaster.tk -> http://server:55555'
+    DOMAINS: 'webrtc.flours.info -> http://server:55555'
     STAGE: 'staging'
     WEBSOCKET: 'true'
 server:
